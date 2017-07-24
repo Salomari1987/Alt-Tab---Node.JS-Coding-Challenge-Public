@@ -4,10 +4,13 @@
   "private": true,
   "scripts": {
     "start": "node app.js",
-    "test": "mocha --recursive"
+    "test": "mocha --recursive --watch"
   },
   "dependencies": {
-    "express": "~4.11.1"
+    "body-parser": "^1.17.2",
+    "express": "~4.11.1",
+    "mongoose": "^4.11.4",
+    "morgan": "^1.8.2"
   },
   "devDependencies": {
     "chai": "^3.5.0",
