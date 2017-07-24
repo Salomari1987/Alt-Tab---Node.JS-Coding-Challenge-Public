@@ -5,7 +5,7 @@ var watch = require('gulp-watch');
 var sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('scripts', function () {
-  gulp.src(['./app_client/**/*.js', '!./app_client/**/*.test.js', '!./app_client/app.min.js'])
+  gulp.src(['./app_client/**/*.js', '!./app_client/**/*.test.js', '!./app_client/app.min.js', '!./app_client/lib/**/*.js'])
     .pipe(sourcemaps.init())
     .pipe(concat('./app.min.js'))
     .pipe(uglify({mangle: true}))
@@ -15,7 +15,7 @@ gulp.task('scripts', function () {
 });
 
 gulp.task('watch', function () {
-  watch(['./app_client/**/*.js', '!./app_client/**/*.test.js', '!./app_client/app.min.js'], function () {
+  watch(['./app_client/**/*.js', '!./app_client/**/*.test.js', '!./app_client/app.min.js', '!./app_client/lib/**/*.js'], function () {
     gulp.start('scripts');
   });
 });
