@@ -1,0 +1,9 @@
+**/node_modules
+**/*.min.js
+**/*.sqlite
+**/coverage
+**/bower_components
+**/lib
+**/vendor
+**/*.min.js
+**/app_client
