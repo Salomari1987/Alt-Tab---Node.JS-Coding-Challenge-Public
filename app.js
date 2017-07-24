@@ -6,7 +6,8 @@ let db = mongoose.connection;
 let app = express();
 
 let PORT = process.env.PORT || 8000;
-let dbconfigs = require('./configs/dbconfigs.js')
+let dbconfigs = require('./configs/dbconfigs.js');
+let routes = require('./routes/routes.js');
 
 db.on('error', console.error);
 
@@ -15,11 +16,13 @@ db.once('open', function () {
 });
 
 //Imports go here (routes, configs, etc)
-require('./configs/middlewares.js')(app, express)
+require('./configs/middlewares.js')(app, express);
 
-mongoose.connect('mongodb://'+dbconfigs.dbHost+'/'+dbconfigs.dbName);
+mongoose.connect('mongodb://' + dbconfigs.dbHost + '/' + dbconfigs.dbName);
 
-app.use('/',express.static('app_client'));
+routes(app, express);
+
+app.use('/', express.static('app_client'));
 
 app.listen(PORT, function () {
   console.log('Listening on port', PORT);
