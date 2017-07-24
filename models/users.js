@@ -11,8 +11,6 @@ var UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
 });
 
-var User = mongoose.model ('User', UserSchema);
-
 UserSchema.pre ('save', function (next) {
   var user = this;
 
@@ -40,9 +38,18 @@ UserSchema.pre ('save', function (next) {
   });
 });
 
+var User = mongoose.model ('User', UserSchema);
+var findOne = q.nbind(User.findOne, User);
+
+User.comparePassword = function (candidatePassword, savedPassword, cb) {
+  bcrypt.compare(candidatePassword, savedPassword, function (err, isMatch) {
+    cb(err, isMatch)
+  });
+};
+
 var userModel = {}
 
-userModel.createUser = function(data, cb) {
+userModel.createUser = function(data) {
   var defer = q.defer();
 
   var newUser= new User({
@@ -58,6 +65,25 @@ userModel.createUser = function(data, cb) {
       defer.resolve(newUser);
     }
   });
+
+  return defer.promise;
+}
+
+userModel.authenticate = function (data) {
+  var defer = q.defer();
+  findOne( { email: data.email } )
+  .then(function (user) {
+    User.comparePassword(data.password, user.password, function (err, isMatch) {
+      if(isMatch) {
+        defer.resolve(user);
+      } else {
+        defer.reject(err)
+      }
+    })
+  })
+  .catch(function (err) {
+    defer.reject(data);
+  })
 
   return defer.promise;
 }

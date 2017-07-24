@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node app.js",
-    "test": "mocha --recursive --watch",
+    "test": "mocha --recursive",
     "lint": "eslint ."
   },
   "dependencies": {
