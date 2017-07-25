@@ -11,6 +11,10 @@ var UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
 });
 
+/////////////////////////////////////////////////////////
+/// Hash password before save. For security purposes ////
+/////////////////////////////////////////////////////////
+
 UserSchema.pre ('save', function (next) {
   var user = this;
 
@@ -41,18 +45,27 @@ UserSchema.pre ('save', function (next) {
 var User = mongoose.model ('User', UserSchema);
 var findOne = q.nbind(User.findOne, User);
 
+//////////////////////////////////////////////////////////////
+/// Check if has of supplied password matches stored hash ////
+//////////////////////////////////////////////////////////////
+
 User.comparePassword = function (candidatePassword, savedPassword, cb) {
   bcrypt.compare(candidatePassword, savedPassword, function (err, isMatch) {
-    cb(err, isMatch)
+    cb(err, isMatch);
   });
 };
 
-var userModel = {}
+
+///////////////////////////////////////////////////
+/// Database model access functions            ////
+///////////////////////////////////////////////////
+
+var userModel = {};
 
 userModel.createUser = function(data) {
   var defer = q.defer();
 
-  var newUser= new User({
+  var newUser = new User({
     password: data.password,
     email: data.email,
     name: data.name
@@ -67,25 +80,39 @@ userModel.createUser = function(data) {
   });
 
   return defer.promise;
-}
+};
 
 userModel.authenticate = function (data) {
   var defer = q.defer();
   findOne( { email: data.email } )
-  .then(function (user) {
-    User.comparePassword(data.password, user.password, function (err, isMatch) {
-      if(isMatch) {
-        defer.resolve(user);
-      } else {
-        defer.reject(err)
-      }
+    .then(function (user) {
+      User.comparePassword(data.password, user.password, function (err, isMatch) {
+        if (isMatch) {
+          defer.resolve(user);
+        } else {
+          defer.reject(err);
+        }
+      });
     })
-  })
-  .catch(function (err) {
-    defer.reject(data);
-  })
+    .catch(function (err) {
+      defer.reject(data);
+    });
 
   return defer.promise;
-}
+};
+
+userModel.getUser = function (data) {
+  var defer = q.defer();
+
+  findOne( {email: data.email })
+    .then(function (user) {
+      defer.resolve(user);
+    })
+    .catch(function (err) {
+      defer.reject(err);
+    });
+
+  return defer.promise;
+};
 
 module.exports = userModel;

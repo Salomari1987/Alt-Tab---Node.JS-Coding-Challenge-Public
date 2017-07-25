@@ -15,7 +15,6 @@ db.once('open', function () {
   console.log('mongoDB is open');
 });
 
-//Imports go here (routes, configs, etc)
 require('./configs/middlewares.js')(app, express);
 
 mongoose.connect('mongodb://' + dbconfigs.dbHost + '/' + dbconfigs.dbName);
